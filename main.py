@@ -129,8 +129,8 @@ def shifts_per_week(shedule_info:list):
             weekend_shifts.append(shedule_info[index+2:index+13])
     return week_shifts, weekend_shifts
 
-def calculate_pay(shedule_info: list):
-#def calculate_pay(weekend_shifts: list, week_shifts:list):
+#def calculate_pay(shedule_info: list):
+def calculate_pay(week_shifts: list, weekend_shifts:list):
     """ 
     Calculate pay
 
@@ -141,7 +141,7 @@ def calculate_pay(shedule_info: list):
     
     Returns two lists with worked hours of one employee, one for week hours and other for weekend hours.
     """
-    week_shifts, weekend_shifts = shifts_per_week(shedule_info)
+    #week_shifts, weekend_shifts = shifts_per_week(shedule_info)
     week_pay_amount = pay_amount(weekend_shifts, weekend=True)
     weekend_pay_amount = pay_amount(week_shifts, weekend=False)
     return week_pay_amount+weekend_pay_amount
@@ -149,7 +149,7 @@ def calculate_pay(shedule_info: list):
 if __name__=="__main__":
     name, shedule_info = read_info()
     for actual_name, actual_shedule_info in zip(name,shedule_info):
-        #week_shift, weekend_shift = shifts_per_week(actual_shedule_info)
-        final_pay_amount=calculate_pay(actual_shedule_info)
-        #final_pay_amount=calculate_pay(week_shift, weekend_shift)
+        week_shift, weekend_shift = shifts_per_week(actual_shedule_info)
+        #final_pay_amount=calculate_pay(actual_shedule_info)
+        final_pay_amount=calculate_pay(week_shift, weekend_shift)
         print(f"The amount to pay for {actual_name} is: {final_pay_amount}")
