@@ -35,15 +35,11 @@ def read_info():
             try:
                 if found == False:
                     raise AssertionError
-                elif name_validation( name ) == False:
-                    name.pop()
-                    shedule_info.pop()
-                    raise AssertionError
                 elif sintaxis_validation( last_shedule_info ) == False:
                     name.pop()
                     shedule_info.pop()
                     raise AssertionError
-                elif shift_validation( i ) == False:
+                elif shift_validation( last_shedule_info ) == False:
                     name.pop()
                     shedule_info.pop()
                     raise AssertionError
@@ -69,10 +65,7 @@ def all_shifts(shedule_info_validation:str):
 
 
 def sintaxis_validation(shedule_info_validation):
-    #Separar en grupos de 13 el string. Los dos primeros deben ser las letras del ejercicio una después de la que corresponde
-    #Se valida que tiene estas letras y si no se eleva error. Después se valida que en la posición _ hay un :. Después se
-    #Valida que las posiciónes _ _ _ _ son números. Basta con que una sintasis este mal para no continuar así que en el for
-    # Debe haber un break o algo que se salga cuando esto ocurra.
+
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
         #Validate ":" was used
@@ -98,21 +91,18 @@ def sintaxis_validation(shedule_info_validation):
     return True
 
 
-def shift_validation(shedule_info):
+def shift_validation(shedule_info_validation):
+    shifts = all_shifts(shedule_info_validation)
+    for i in shifts:
+        min = int(i[2:4])
+        max = int(i[8:10])
+        if 0 >= min and max<=9:
+            return False
+        if 9 <= min and min<=18 and max>18:
+            return False
+        elif 18 <= min and max>=24:
+            return False
     return True
-
-
-def name_validation(name):
-    return True
-
-# def validate_info(name,shedule_info):
-#     sintax_validation = validate_sintaxis(shedule_info)
-#     shift_validation = validate_shift(shedule_info)
-#     name_validation = validate_name(name)
-#     if sintax_validation == True and shift_validation == True and name_validation == True:
-#         return True
-#     else:
-#         return False
 
 
 def calculate_amount(num_hours: int, weekend: bool, price_type: int):
@@ -217,33 +207,21 @@ def shifts_per_week(shedule_info: str, validation:bool):
     """
     week_shifts = []
     weekend_shifts = []
-    all_shifts = []
     for index, i in enumerate(shedule_info):
         if i == "M" and shedule_info[index + 1] == "O":
             week_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "T" and shedule_info[index + 1] == "U":
             week_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "T" and shedule_info[index + 1] == "H":
             week_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "W" and shedule_info[index + 1] == "E":
             week_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "F" and shedule_info[index + 1] == "R":
             week_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "S" and shedule_info[index + 1] == "A":
             weekend_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
         elif i == "S" and shedule_info[index + 1] == "U":
             weekend_shifts.append(shedule_info[index + 2 : index + 13])
-            all_shifts.append(shedule_info[index : index + 13])
-        # else:
-        #     print("Escriba un formato de horario valido")
-    if validation == True:
-        return all_shifts
     else:
         return week_shifts, weekend_shifts
 
