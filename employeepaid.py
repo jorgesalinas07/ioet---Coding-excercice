@@ -1,3 +1,10 @@
+""" Asumir:
+    * Se deben recibir la información en el formato del ejemplo. 
+    Es decir, RENEMO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00
+    * Un empleado no puede hacer un turno que pertenezca a varias categorias para el mismo día. Es decir,
+    que no para un día de la semana no pueda esta en el turno de 00:01 - 09:00 y de 09:01 - 18:00 por ejemplo.
+    * No se entrega toda la información si un dato tien un error"""
+
 def read_info():
     """
     Read txt file info
@@ -6,16 +13,53 @@ def read_info():
 
     Returns two lists with all names and shifts employee's information
     """
+    #Usar el for de esta función para validar la información y que solo pase la información que si está validada. EL resto se queda
+    # Por lo tanto, solo se hace el proceso con la info correcta. Se deja un mensaje de error con las informaciones que no cumplen con los criteriors
     with open("./employee_info.txt", mode="r") as f:
         name = []
         shedule_info = []
+        first_validate = True
         for i in f:
+            found = False
             for index, a in enumerate(i):
                 if a == "=":
                     name.append(i[:index])
                     shedule_info.append(i[index + 1 :])
+                    found = True
                     break
-        return (name, shedule_info)
+            try:
+                if found == False:
+                    raise AssertionError
+            except AssertionError:
+                #first_validate = False
+                print(f'El usuario N{index} no tiene un formato de horario valido.')
+
+        return (name, shedule_info, first_validate)
+
+
+def validate_sintaxis(shedule_info):
+    #Separar en grupos de 13 el string. Los dos primeros deben ser las letras del ejercicio una después de la que corresponde
+    #Se valida que tiene estas letras y si no se eleva error. Después se valida que en la posición _ hay un :. Después se
+    #Valida que las posiciónes _ _ _ _ son números. Basta con que una sintasis este mal para no continuar así que en el for
+    # Debe haber un break o algo que se salga cuando esto ocurra.
+    return True
+
+
+def validate_shift(shedule_info):
+    return True
+
+
+def validate_name(name):
+    return True
+
+def validate_info(name,shedule_info):
+    sintax_validation = validate_sintaxis(shedule_info)
+    shift_validation = validate_shift(shedule_info)
+    name_validation = validate_name(name)
+    if sintax_validation == True and shift_validation == True and name_validation == True:
+        return True
+    else:
+        return False
 
 
 def calculate_amount(num_hours: int, weekend: bool, price_type: int):
@@ -135,6 +179,8 @@ def shifts_per_week(shedule_info: list):
             weekend_shifts.append(shedule_info[index + 2 : index + 13])
         elif i == "S" and shedule_info[index + 1] == "U":
             weekend_shifts.append(shedule_info[index + 2 : index + 13])
+        # else:
+        #     print("Escriba un formato de horario valido")
     return week_shifts, weekend_shifts
 
 
@@ -155,8 +201,18 @@ def calculate_pay(week_shifts: list, weekend_shifts: list):
 
 
 if __name__ == "__main__":
-    name, shedule_info =                read_info()
+
+    #USAR COMENTARIOS PARA EXPLICAR MEJOR LAS FUNCIONES
+    name, shedule_info, first_validate =                 read_info()
+    #info_validate =                                      validate_info(name,shedule_info)
+    #try:
+    #if info_validate and first_validate:
     for actual_name, actual_shedule_info in zip(name, shedule_info):
         week_shift, weekend_shift =     shifts_per_week(actual_shedule_info)
         final_pay_amount =              calculate_pay(week_shift, weekend_shift)
         print(f"The amount to pay for {actual_name} is: {final_pay_amount}")
+    #     else:
+    #         #INTENTAR MOSTRAR UN ERROR MENSSAGE DIFERENTE PARA CADA CASO
+    #         raise AssertionError
+    # except AssertionError:
+    #     print("Uno o mas datos no tiene un formato de horario valido.")
