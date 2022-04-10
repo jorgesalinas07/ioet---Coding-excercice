@@ -6,25 +6,21 @@
     * No se entrega toda la información si un dato tien un error"""
 
 
-
 def read_info():
     """
     Read txt file info
 
-    This function reads the .txt file with all employee information
+    This function reads the .txt file with all employee information and runs some validations
 
-    Returns two lists with all names and shifts employee's information
+    Returns two lists with all names and shift validated employee's information
     """
-    #Corregir la documentación de todos los alterados
     #Revisar por que el tipado estatico no está funcionando
-    #Usar el for de esta función para validar la información y que solo pase la información que si está validada. EL resto se queda
-    # Por lo tanto, solo se hace el proceso con la info correcta. Se deja un mensaje de error con las informaciones que no cumplen con los criteriors
     with open("./employee_info.txt", mode="r") as f:
         name = []
         shedule_info = []
-        first_validate = True
         for general_index, i in enumerate(f):
             found = False
+            last_shedule_info = 1
             for index, a in enumerate(i.upper()):
                 if a == "=":
                     name.append(i[:index])
@@ -32,27 +28,21 @@ def read_info():
                     last_shedule_info = i[index + 1 :]
                     found = True
                     break
-            try:
-                if found == False:
-                    raise AssertionError
-                elif sintaxis_validation( last_shedule_info ) == False:
-                    name.pop()
-                    shedule_info.pop()
-                    raise AssertionError
-                elif shift_validation( last_shedule_info ) == False:
-                    name.pop()
-                    shedule_info.pop()
-                    raise AssertionError
-            except AssertionError:
-                #first_validate = False
-                print("\n")
-                print(f'El usuario #{general_index+1} no tiene un formato de horario valido.')
-                print("\n")
-
-        return (name, shedule_info, first_validate)
+            name, shedule_info = validate_info(found,last_shedule_info,name,shedule_info, general_index)
+        return name, shedule_info
 
 
 def all_shifts(shedule_info_validation:str):
+    """
+    All shifts
+
+    This function works to help other funtions. It organizes the shedule information on a formar that can be used easier later
+
+    Parameters:
+    - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
+
+    Returns a list with shedule information about an employee. Ej: [MO10:00-12:00,TU10:00-12:00]
+    """
     bottom = True
     shifts = []
     index = 0
@@ -64,8 +54,55 @@ def all_shifts(shedule_info_validation:str):
     return shifts
 
 
-def sintaxis_validation(shedule_info_validation):
+def validate_info(found:bool,last_shedule_info:str,name:list,shedule_info:list, general_index:int):
+    """
+    info validation
 
+    This function validates the given information matches with the correct sintax and shift by using the
+    sintaxis_validation and shift_validation
+
+    Parameters:
+    - found                 -> A bool value depeding on the "=" value is founded where is should be on the input data
+    - last_shedule_info     -> A string value with current employee information to analize. Ej: "MO10:00-12:00,TU10:00-12:00" 
+    - name                  -> A list value with the names of all employees.
+    - shedule_info          -> A list value with worked hours for all employees. Ej: ["MO10:00-12:00,TU10:00-12:00","MO11:00-12:00,TU09:00-12:00"]
+    - general_index         -> A int value used to indentify the number of the employee in the list of input data.
+
+    Returns two lists with a validated information. One with currect validated name and other with currect validated shadule info.
+    However, if the current employee don't fits with any validation process, it raises an error and prints an error message.
+    """
+    try:
+        if found == False:
+            raise AssertionError
+        elif sintaxis_validation( last_shedule_info ) == False:
+            name.pop()
+            shedule_info.pop()
+            raise AssertionError
+        elif shift_validation( last_shedule_info ) == False:
+            name.pop()
+            shedule_info.pop()
+            raise AssertionError
+    except AssertionError:
+        print("\n")
+        print(f'El usuario #{general_index+1} no tiene un formato de horario valido.')
+        print("\n")
+    return name,shedule_info
+        
+
+
+def sintaxis_validation(shedule_info_validation:str):
+    """
+    Sintaxis validation
+
+    This function validates the given information matches with the correct sintax of the input,
+    which is the following:
+                day of the week(MO, TU, WE...)+range of shift(10:00-12:00),same structure
+                
+    Parameters:
+    - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
+
+    Returns true or false depeding on wheather sintax is valid or not.
+    """
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
         #Validate ":" was used
@@ -91,7 +128,19 @@ def sintaxis_validation(shedule_info_validation):
     return True
 
 
-def shift_validation(shedule_info_validation):
+def shift_validation(shedule_info_validation:str):
+    """
+    Shift validation
+
+    This function validates the given information matches with ONE of the available worked hour's categorys,
+    which are the following:
+                00:01 - 09:00, 09:01 - 18:00, 18:01 - 00:00
+                
+    Parameters:
+    - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
+
+    Returns true or false depeding on wheather shift is valid or not.
+    """
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
         min = int(i[2:4])
@@ -194,7 +243,7 @@ def pay_amount(shifts: list, weekend: bool):
     return amount_type1 + amount_type2 + amount_type3
 
 
-def shifts_per_week(shedule_info: str, validation:bool):
+def shifts_per_week(shedule_info: str):
     """
     shifts per week
 
@@ -230,12 +279,13 @@ def calculate_pay(week_shifts: list, weekend_shifts: list):
     """
     Calculate pay
 
-    This function calculates the USD amount to be paid for each employee by using the functions pay_amount and shift_per_week
+    This function calculates the USD amount to be paid for each employee by using the functions pay_amount
 
     Parameters:
-    - shedule_info     -> A list with the worked hours for one employee (weekend and not weekend)
+    - week_shifts       -> A list value with all week shedule information for one employee
+    - weekend_shifts    -> A list value with all weekend shedule information for one employee 
 
-    Returns two lists with worked hours of one employee, one for week hours and other for weekend hours.
+    Returns two lists with worked hours of one employee. One for week hours and other for weekend hours.
     """
     week_pay_amount =       pay_amount(weekend_shifts, weekend=True)
     weekend_pay_amount =    pay_amount(week_shifts, weekend=False)
@@ -245,16 +295,8 @@ def calculate_pay(week_shifts: list, weekend_shifts: list):
 if __name__ == "__main__":
 
     #USAR COMENTARIOS PARA EXPLICAR MEJOR LAS FUNCIONES
-    name, shedule_info, first_validate =                 read_info()
-    #info_validate =                                      validate_info(name,shedule_info)
-    #try:
-    #if info_validate and first_validate:
+    name, shedule_info =                 read_info()
     for actual_name, actual_shedule_info in zip(name, shedule_info):
-        week_shift, weekend_shift =     shifts_per_week(actual_shedule_info, validation=False)
+        week_shift, weekend_shift =     shifts_per_week(actual_shedule_info)
         final_pay_amount =              calculate_pay(week_shift, weekend_shift)
         print(f"The amount to pay for {actual_name} is: {final_pay_amount}")
-    #     else:
-    #         #INTENTAR MOSTRAR UN ERROR MENSSAGE DIFERENTE PARA CADA CASO
-    #         raise AssertionError
-    # except AssertionError:
-    #     print("Uno o mas datos no tiene un formato de horario valido.")
