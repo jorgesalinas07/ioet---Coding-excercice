@@ -8,7 +8,7 @@
 from typing import List
 
 
-def read_info():
+def read_info() -> list:
     """
     Read txt file info
 
@@ -17,8 +17,8 @@ def read_info():
     Returns two lists with all names and shift validated employee's information
     """
     with open("./employee_info.txt", mode="r") as f:
-        name = []
-        shedule_info = []
+        name:List[str] = []
+        shedule_info:List[str] = []
         for general_index, i in enumerate(f):
             found = False
             last_shedule_info = 1
@@ -39,7 +39,7 @@ def all_shifts(shedule_info_validation: str) -> list:
     """
     All shifts
 
-    This function works to help other funtions. It organizes the shedule information on a formar that can be used easier later
+    This function works to help other funtions. It organizes the shedule information on a format that can be used easier later
 
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
@@ -206,6 +206,7 @@ def pay_amount(shifts: list, weekend: bool) -> int:
 
     Parameters:
     - shifts        -> A list with the weekend or not weekend worked hours for one employee
+    Ej: ['14:00-18:00', '20:00-21:00']
     - weekend       -> A bool value depending wheather it is a weekend shift or not
 
     Returns a USD addition of all type of hours for the given employee and weekend conditions.
@@ -259,6 +260,7 @@ def shifts_per_week(shedule_info: str) -> list:
 
     Parameters:
     - shedule_info     -> A list with the worked hours for one employee (weekend and not weekend)
+    Ej: 'MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n'
 
     Returns two lists with worked hours of one employee, one for week hours and other for weekend hours.
     """
@@ -290,8 +292,8 @@ def calculate_pay(week_shifts: list, weekend_shifts: list) -> list:
     This function calculates the USD amount to be paid for each employee by using the functions pay_amount
 
     Parameters:
-    - week_shifts       -> A list value with all week shedule information for one employee
-    - weekend_shifts    -> A list value with all weekend shedule information for one employee
+    - week_shifts       -> A list value with all week shedule information for one employee. Ej: '10:00-12:00', '12:00-14:00'
+    - weekend_shifts    -> A list value with all weekend shedule information for one employee. Ej: '20:00-21:00'
 
     Returns two lists with worked hours of one employee. One for week hours and other for weekend hours.
     """
