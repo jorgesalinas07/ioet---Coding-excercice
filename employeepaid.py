@@ -4,6 +4,8 @@
     * Un empleado no puede hacer un turno que pertenezca a varias categorias para el mismo día. Es decir,
     que no para un día de la semana no pueda esta en el turno de 00:01 - 09:00 y de 09:01 - 18:00 por ejemplo.
     * No se entrega toda la información si un dato tien un error"""
+# Python
+from typing import List
 
 
 def read_info():
@@ -14,7 +16,6 @@ def read_info():
 
     Returns two lists with all names and shift validated employee's information
     """
-    #Revisar por que el tipado estatico no está funcionando
     with open("./employee_info.txt", mode="r") as f:
         name = []
         shedule_info = []
@@ -28,11 +29,13 @@ def read_info():
                     last_shedule_info = i[index + 1 :]
                     found = True
                     break
-            name, shedule_info = validate_info(found,last_shedule_info,name,shedule_info, general_index)
+            name, shedule_info = validate_info(
+                found, last_shedule_info, name, shedule_info, general_index
+            )
         return name, shedule_info
 
 
-def all_shifts(shedule_info_validation:str):
+def all_shifts(shedule_info_validation: str) -> list:
     """
     All shifts
 
@@ -41,20 +44,26 @@ def all_shifts(shedule_info_validation:str):
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
 
-    Returns a list with shedule information about an employee. Ej: [MO10:00-12:00,TU10:00-12:00]
+    Returns a list with shedule information about an employee. Ej: ['MO10:00-12:00','TU10:00-12:00']
     """
     bottom = True
-    shifts = []
+    shifts: List[str] = []
     index = 0
     while bottom:
-        shifts.append(shedule_info_validation[index:index+13])
-        index +=14
-        if len(shedule_info_validation[index:index+13]) == 0:
+        shifts.append(shedule_info_validation[index : index + 13])
+        index += 14
+        if len(shedule_info_validation[index : index + 13]) == 0:
             bottom = False
     return shifts
 
 
-def validate_info(found:bool,last_shedule_info:str,name:list,shedule_info:list, general_index:int):
+def validate_info(
+    found: bool,
+    last_shedule_info: str,
+    name: list,
+    shedule_info: list,
+    general_index: int,
+) -> list:
     """
     info validation
 
@@ -63,7 +72,7 @@ def validate_info(found:bool,last_shedule_info:str,name:list,shedule_info:list, 
 
     Parameters:
     - found                 -> A bool value depeding on the "=" value is founded where is should be on the input data
-    - last_shedule_info     -> A string value with current employee information to analize. Ej: "MO10:00-12:00,TU10:00-12:00" 
+    - last_shedule_info     -> A string value with current employee information to analize. Ej: "MO10:00-12:00,TU10:00-12:00"
     - name                  -> A list value with the names of all employees.
     - shedule_info          -> A list value with worked hours for all employees. Ej: ["MO10:00-12:00,TU10:00-12:00","MO11:00-12:00,TU09:00-12:00"]
     - general_index         -> A int value used to indentify the number of the employee in the list of input data.
@@ -74,30 +83,29 @@ def validate_info(found:bool,last_shedule_info:str,name:list,shedule_info:list, 
     try:
         if found == False:
             raise AssertionError
-        elif sintaxis_validation( last_shedule_info ) == False:
+        elif sintaxis_validation(last_shedule_info) == False:
             name.pop()
             shedule_info.pop()
             raise AssertionError
-        elif shift_validation( last_shedule_info ) == False:
+        elif shift_validation(last_shedule_info) == False:
             name.pop()
             shedule_info.pop()
             raise AssertionError
     except AssertionError:
         print("\n")
-        print(f'El usuario #{general_index+1} no tiene un formato de horario valido.')
+        print(f"El usuario #{general_index+1} no tiene un formato de horario valido.")
         print("\n")
-    return name,shedule_info
-        
+    return name, shedule_info
 
 
-def sintaxis_validation(shedule_info_validation:str):
+def sintaxis_validation(shedule_info_validation: str) -> bool:
     """
     Sintaxis validation
 
     This function validates the given information matches with the correct sintax of the input,
     which is the following:
                 day of the week(MO, TU, WE...)+range of shift(10:00-12:00),same structure
-                
+
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
 
@@ -105,10 +113,10 @@ def sintaxis_validation(shedule_info_validation:str):
     """
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
-        #Validate ":" was used
+        # Validate ":" was used
         if i[4] != ":" and i[10] != ":":
             return False
-        #Validate a valid day was used
+        # Validate a valid day was used
         if i[0:2] == "MO":
             next
         elif i[0:2] == "TU":
@@ -128,14 +136,14 @@ def sintaxis_validation(shedule_info_validation:str):
     return True
 
 
-def shift_validation(shedule_info_validation:str):
+def shift_validation(shedule_info_validation: str) -> bool:
     """
     Shift validation
 
     This function validates the given information matches with ONE of the available worked hour's categorys,
     which are the following:
                 00:01 - 09:00, 09:01 - 18:00, 18:01 - 00:00
-                
+
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
 
@@ -145,16 +153,16 @@ def shift_validation(shedule_info_validation:str):
     for i in shifts:
         min = int(i[2:4])
         max = int(i[8:10])
-        if 0 >= min and max<=9:
+        if 0 >= min and max <= 9:
             return False
-        if 9 <= min and min<=18 and max>18:
+        if 9 <= min and min <= 18 and max > 18:
             return False
-        elif 18 <= min and max>=24:
+        if 18 <= min and max >= 24:
             return False
     return True
 
 
-def calculate_amount(num_hours: int, weekend: bool, price_type: int):
+def calculate_amount(num_hours: int, weekend: bool, price_type: int) -> int:
     """
     Calculate amount
 
@@ -187,7 +195,7 @@ def calculate_amount(num_hours: int, weekend: bool, price_type: int):
         print("Escriba una opción valida")
 
 
-def pay_amount(shifts: list, weekend: bool):
+def pay_amount(shifts: list, weekend: bool) -> int:
     """
     Pay amount
 
@@ -243,7 +251,7 @@ def pay_amount(shifts: list, weekend: bool):
     return amount_type1 + amount_type2 + amount_type3
 
 
-def shifts_per_week(shedule_info: str):
+def shifts_per_week(shedule_info: str) -> list:
     """
     shifts per week
 
@@ -254,8 +262,8 @@ def shifts_per_week(shedule_info: str):
 
     Returns two lists with worked hours of one employee, one for week hours and other for weekend hours.
     """
-    week_shifts = []
-    weekend_shifts = []
+    week_shifts: List[str] = []
+    weekend_shifts: List[str] = []
     for index, i in enumerate(shedule_info):
         if i == "M" and shedule_info[index + 1] == "O":
             week_shifts.append(shedule_info[index + 2 : index + 13])
@@ -275,7 +283,7 @@ def shifts_per_week(shedule_info: str):
         return week_shifts, weekend_shifts
 
 
-def calculate_pay(week_shifts: list, weekend_shifts: list):
+def calculate_pay(week_shifts: list, weekend_shifts: list) -> list:
     """
     Calculate pay
 
@@ -283,20 +291,20 @@ def calculate_pay(week_shifts: list, weekend_shifts: list):
 
     Parameters:
     - week_shifts       -> A list value with all week shedule information for one employee
-    - weekend_shifts    -> A list value with all weekend shedule information for one employee 
+    - weekend_shifts    -> A list value with all weekend shedule information for one employee
 
     Returns two lists with worked hours of one employee. One for week hours and other for weekend hours.
     """
-    week_pay_amount =       pay_amount(weekend_shifts, weekend=True)
-    weekend_pay_amount =    pay_amount(week_shifts, weekend=False)
+    week_pay_amount = pay_amount(weekend_shifts, weekend=True)
+    weekend_pay_amount = pay_amount(week_shifts, weekend=False)
     return week_pay_amount + weekend_pay_amount
 
 
 if __name__ == "__main__":
-
-    #USAR COMENTARIOS PARA EXPLICAR MEJOR LAS FUNCIONES
-    name, shedule_info =                 read_info()
+    """Main funtion where process is done"""
+    # USAR COMENTARIOS PARA EXPLICAR MEJOR LAS FUNCIONES
+    name, shedule_info = read_info()
     for actual_name, actual_shedule_info in zip(name, shedule_info):
-        week_shift, weekend_shift =     shifts_per_week(actual_shedule_info)
-        final_pay_amount =              calculate_pay(week_shift, weekend_shift)
+        week_shift, weekend_shift = shifts_per_week(actual_shedule_info)
+        final_pay_amount = calculate_pay(week_shift, weekend_shift)
         print(f"The amount to pay for {actual_name} is: {final_pay_amount}")
