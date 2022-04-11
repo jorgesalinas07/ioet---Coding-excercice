@@ -1,3 +1,5 @@
+""" Some tests for the business logic of the ACME employee's payment code"""
+
 import unittest
 from employeepaid import (
     calculate_amount,
@@ -16,7 +18,6 @@ class TestEmployeePaid(unittest.TestCase):
 
     def test_calculate_pay(self):
         """Confirm user receives the correct amount of USD with the example shifts distribution"""
-        # Verificar la manera correctar de los comentarios de los tests
         week_shifts1 = ["10:00-12:00", "10:00-12:00", "01:00-03:00"]
         weekend_shifts1 = ["14:00-18:00", "20:00-21:00"]
         week_shifts2 = ["10:00-12:00", "12:00-14:00"]
@@ -25,7 +26,7 @@ class TestEmployeePaid(unittest.TestCase):
         self.assertEqual(calculate_pay(week_shifts2, weekend_shifts2), 85)
 
     def test_shifts_per_week(self):
-        """Function should return two list with with shift distribution for week and weekends"""
+        """The function should return two lists with shift distribution for the week and weekends"""
         shedule_info1 = (
             "MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n"
         )
@@ -42,7 +43,7 @@ class TestEmployeePaid(unittest.TestCase):
         )
 
     def test_pay_amount(self):
-        """User should receive a correct USD amount for the week or weekend distribution"""
+        """The user should receive the correct USD amount for the week or weekend distribution"""
         shifts1 = ["14:00-18:00", "20:00-21:00"]
         shifts2 = ["10:00-12:00", "10:00-12:00", "01:00-03:00"]
         self.assertEqual(pay_amount(shifts1, weekend=True), 105)
@@ -58,7 +59,7 @@ class TestEmployeePaid(unittest.TestCase):
         self.assertEqual(calculate_amount(num_hours=1, weekend=False, price_type=3), 20)
 
     def test_shift_validation(self):
-        """User shouldn't be able to place shifts which are out of the standard shedule"""
+        """Users shouldn't be able to place shifts that are out of the standard schedule"""
         shedule_info_validation1 = (
             "MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n"
         )
@@ -69,7 +70,7 @@ class TestEmployeePaid(unittest.TestCase):
         self.assertEqual(shift_validation(shedule_info_validation2), False)
 
     def test_sintaxis_validation(self):
-        """User shouldn't be able to place shifts which have an incorrect sintax"""
+        """Users shouldn't be able to place shifts that have an incorrect syntax"""
         shedule_info_validation1 = (
             "MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n"
         )
@@ -88,8 +89,8 @@ class TestEmployeePaid(unittest.TestCase):
         self.assertEqual(sintaxis_validation(shedule_info_validation4), False)
 
     def test_validate_info(self):
-        """User shouldn't be able to place shifts which has sintax errors, shifts errors or those which don't have '='.
-        Those cases should return two list with all names and shedule information except the incorrect employee information"""
+        """Users shouldn't be able to place shifts that have syntax errors, shifts errors, or those which don't have '='.
+        Those cases should return two lists with all names and schedule information except the incorrect employee information"""
         # Correct case
         last_shedule_info1 = (
             "MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n"
@@ -158,7 +159,7 @@ class TestEmployeePaid(unittest.TestCase):
         )
 
     def test_all_shifts(self):
-        """Function should return a list with an specific format of information"""
+        """The function should return a list with a specific format of information"""
         shedule_info_validation = (
             "MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n"
         )

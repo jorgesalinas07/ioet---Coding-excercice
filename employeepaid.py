@@ -1,3 +1,5 @@
+""" Business logic for the USD payment of the ACME's employees """
+
 # Python
 from typing import List
 
@@ -8,7 +10,7 @@ def read_info() -> list:
 
     This function reads the .txt file with all employee information and runs some validations
 
-    Returns two lists with all names and shift validated employee's information
+    Returns two lists with all names and shift validated employee information
     """
     with open("./employee_info.txt", mode="r") as f:
         name:List[str] = []
@@ -33,7 +35,7 @@ def all_shifts(shedule_info_validation: str) -> list:
     """
     All shifts
 
-    This function works to help other funtions. It organizes the shedule information on a format that can be used easier later
+    This function works to help other functions. It organizes the schedule information in a format that can be used easier later
 
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
@@ -59,20 +61,20 @@ def validate_info(
     general_index: int,
 ) -> list:
     """
-    info validation
+    Info validation
 
-    This function validates the given information matches with the correct sintax and shift by using the
+    This function validates the given information matches with the correct syntax and shifts by using the
     sintaxis_validation and shift_validation
 
     Parameters:
-    - found                 -> A bool value depeding on the "=" value is founded where is should be on the input data
+    - found                 -> A bool value depending on the "=" value is founded where it should be on the input data
     - last_shedule_info     -> A string value with current employee information to analize. Ej: "MO10:00-12:00,TU10:00-12:00"
     - name                  -> A list value with the names of all employees.
     - shedule_info          -> A list value with worked hours for all employees. Ej: ["MO10:00-12:00,TU10:00-12:00","MO11:00-12:00,TU09:00-12:00"]
-    - general_index         -> A int value used to indentify the number of the employee in the list of input data.
+    - general_index         -> A int value used to identify the number of employees in the list of input data.
 
-    Returns two lists with a validated information. One with currect validated name and other with currect validated shadule info.
-    However, if the current employee don't fits with any validation process, it raises an error and prints an error message.
+    Returns two lists with validated information. One with the current validated name and the other with the current validated schedule info.
+    However, if the current employee doesn't fit with any validation process, it raises an error and prints an error message.
     """
     try:
         if found == False:
@@ -96,14 +98,14 @@ def sintaxis_validation(shedule_info_validation: str) -> bool:
     """
     Sintaxis validation
 
-    This function validates the given information matches with the correct sintax of the input,
+    This function validates the given information matches with the correct syntax of the input,
     which is the following:
-                day of the week(MO, TU, WE...)+range of shift(10:00-12:00),same structure
+                day of the week(MO, TU, WE...)+range of shifts (10:00-12:00), same structure
 
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
 
-    Returns true or false depeding on wheather sintax is valid or not.
+    Returns true or false depending on whether the syntax is valid or not.
     """
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
@@ -134,14 +136,14 @@ def shift_validation(shedule_info_validation: str) -> bool:
     """
     Shift validation
 
-    This function validates the given information matches with ONE of the available worked hour's categorys,
+    This function validates the given information matches with ONE of the available worked hours categories,
     which are the following:
                 00:01 - 09:00, 09:01 - 18:00, 18:01 - 00:00
 
     Parameters:
     - shedule_info_validation       -> A str value with worked hours for one employee. Ej: 'MO10:00-12:00,TU10:00-12:00'
 
-    Returns true or false depeding on wheather shift is valid or not.
+    Returns true or false depending on whether the shift is valid or not.
     """
     shifts = all_shifts(shedule_info_validation)
     for i in shifts:
@@ -161,15 +163,15 @@ def calculate_amount(num_hours: int, weekend: bool, price_type: int) -> int:
     Calculate amount
 
     This function calculates the amount of money depeding on the worked hour's category:
-                00:01 - 09:00 25 USD, 09:01 - 18:00 15 USD, 18:01 - 00:00 20 USD - For week days
+                00:01 - 09:00 25 USD, 09:01 - 18:00 15 USD, 18:01 - 00:00 20 USD - For weekdays
                 00:01 - 09:00 30 USD, 09:01 - 18:00 20 USD ,18:01 - 00:00 25 USD - For weekends
 
     Parameters:
     - num_hours     -> A int value with worked hours for one employee
-    - weekend       -> A bool value depending wheather it is a weekend shift or not
-    - price_type    -> A int value depeding on the worked category mencioned before
+    - weekend       -> A bool value depending on whether it is a weekend shift or not
+    - price_type    -> A int value depending on the worked category mentioned before
 
-    Returns the amount of USD depeding on the worked hours (num_hours) and hour value.
+    Returns the amount of USD depending on the worked hours (num_hours) and hour value.
     """
     if weekend == False:
         if price_type == 1:
@@ -193,7 +195,7 @@ def pay_amount(shifts: list, weekend: bool) -> int:
     """
     Pay amount
 
-    This function clasify shifts on the correct range and day of the week according to the following information:
+    This function classifies shifts on the correct range and day of the week according to the following information:
                 00:01 - 09:00, 09:01 - 18:00, 18:01 - 00:00 - For week days
                 00:01 - 09:00, 09:01 - 18:00, 18:01 - 00:00 - For weekends
     It also adds the USD amounts on every category by using the function calculate_amount
@@ -201,9 +203,9 @@ def pay_amount(shifts: list, weekend: bool) -> int:
     Parameters:
     - shifts        -> A list with the weekend or not weekend worked hours for one employee
     Ej: ['14:00-18:00', '20:00-21:00']
-    - weekend       -> A bool value depending wheather it is a weekend shift or not
+    - weekend       -> A bool value depending on whether it is a weekend shift or not.
 
-    Returns a USD addition of all type of hours for the given employee and weekend conditions.
+    Returns a USD addition of all types of hours for the given employee and weekend conditions.
     """
     amount_type1, amount_type2, amount_type3 = [0, 0, 0]
     for actual_shift in shifts:
@@ -250,13 +252,13 @@ def shifts_per_week(shedule_info: str) -> list:
     """
     shifts per week
 
-    This function clasify shifts on week and weekends.
+    This function classifies shifts on weekdays and weekends.
 
     Parameters:
     - shedule_info     -> A list with the worked hours for one employee (weekend and not weekend)
     Ej: 'MO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00\n'
 
-    Returns two lists with worked hours of one employee, one for week hours and other for weekend hours.
+    Returns two lists with worked hours of one employee, one for week hours and the other for weekend hours
     """
     week_shifts: List[str] = []
     weekend_shifts: List[str] = []
@@ -286,10 +288,10 @@ def calculate_pay(week_shifts: list, weekend_shifts: list) -> list:
     This function calculates the USD amount to be paid for each employee by using the functions pay_amount
 
     Parameters:
-    - week_shifts       -> A list value with all week shedule information for one employee. Ej: '10:00-12:00', '12:00-14:00'
-    - weekend_shifts    -> A list value with all weekend shedule information for one employee. Ej: '20:00-21:00'
+    - week_shifts           -> A list value with all week shedule information for one employee. Ej: '10:00-12:00', '12:00-14:00'
+    - weekend_shifts        -> A list value with all weekend shedule information for one employee. Ej: '20:00-21:00'
 
-    Returns two lists with worked hours of one employee. One for week hours and other for weekend hours.
+    Returns two lists with worked hours of one employee. One for week hours and the other for weekend hours.
     """
     week_pay_amount = pay_amount(weekend_shifts, weekend=True)
     weekend_pay_amount = pay_amount(week_shifts, weekend=False)
@@ -297,7 +299,7 @@ def calculate_pay(week_shifts: list, weekend_shifts: list) -> list:
 
 
 if __name__ == "__main__":
-    """Main funtion where process is done"""
+    """Main function where the process is done"""
     name, shedule_info = read_info()
     for actual_name, actual_shedule_info in zip(name, shedule_info):
         week_shift, weekend_shift = shifts_per_week(actual_shedule_info)
