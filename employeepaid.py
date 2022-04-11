@@ -1,9 +1,3 @@
-""" Asumir:
-    * Se deben recibir la información en el formato del ejemplo. 
-    Es decir, RENEMO10:00-12:00,TU10:00-12:00,TH01:00-03:00,SA14:00-18:00,SU20:00-21:00
-    * Un empleado no puede hacer un turno que pertenezca a varias categorias para el mismo día. Es decir,
-    que no para un día de la semana no pueda esta en el turno de 00:01 - 09:00 y de 09:01 - 18:00 por ejemplo.
-    * No se entrega toda la información si un dato tien un error"""
 # Python
 from typing import List
 
@@ -304,7 +298,6 @@ def calculate_pay(week_shifts: list, weekend_shifts: list) -> list:
 
 if __name__ == "__main__":
     """Main funtion where process is done"""
-    # USAR COMENTARIOS PARA EXPLICAR MEJOR LAS FUNCIONES
     name, shedule_info = read_info()
     for actual_name, actual_shedule_info in zip(name, shedule_info):
         week_shift, weekend_shift = shifts_per_week(actual_shedule_info)

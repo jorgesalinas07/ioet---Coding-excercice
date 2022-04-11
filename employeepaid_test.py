@@ -12,7 +12,7 @@ from employeepaid import (
 
 
 class TestEmployeePaid(unittest.TestCase):
-    """Tests for the employee USD calculate"""
+    """Tests for the employee USD calculation"""
 
     def test_calculate_pay(self):
         """Confirm user receives the correct amount of USD with the example shifts distribution"""
